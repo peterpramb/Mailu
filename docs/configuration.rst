@@ -121,16 +121,19 @@ Full-text search is enabled for IMAP is enabled by default. This feature can be 
 
 The `mail replication`_ feature in Dovecot is disabled by default. It can be enabled
 in a two-node Mailu setup by setting the optional variable ``REPLICATION`` to ``on``.
+Please note that both Mailu installations must have identical users configured for
+this feature to work. It is highly recommended to use the same (shared or replicated)
+database to ensure configuration consistency between both Mailu installations.
 
 .. _`mail replication`: https://doc.dovecot.org/configuration_manual/replication/
 
 The ``REPLICATION_TARGET`` is a mandatory setting when replication is enabled and
 points to the remote replication host in following format: ``tcp:HOST[:PORT]``.
-``Port`` defaults to ``REPLICATION_PORT`` when not specified.
+The port defaults to ``REPLICATION_PORT`` when not specified.
 
 The ``REPLICATION_PORT`` is a mandatory setting when replication is enabled and
-defines the local listening port of the replicator. Don't forget to publish this
-container's port on both Mailu nodes to allow connectivity between them.
+defines the local listening port of the replicator. It is necessary to publish this
+port on both Mailu nodes to allow connectivity between them.
 
 The ``REPLICATION_SECRET`` is a mandatory setting when replication is enabled and
 defines the shared secret of the replicator. It must be identical on both Mailu
