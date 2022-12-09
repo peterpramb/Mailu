@@ -9,12 +9,13 @@ import re
 import requests
 import sys
 import traceback
+import random
 
 
 FETCHMAIL = """
 fetchmail -N \
-    --idfile /data/fetchids --uidl \
-    --sslcertck --sslcertpath /etc/ssl/certs \
+    --idfile /data/fetchids --pidfile /data/fetchpid \
+    --uidl --sslcertck --sslcertpath /etc/ssl/certs \
     -f {}
 """
 
@@ -76,8 +77,10 @@ def run(debug):
                 error_message = ""
             except subprocess.CalledProcessError as error:
                 error_message = error.output.decode("utf8")
-                # No mail is not an error
-                if not error_message.startswith("fetchmail: No mail"):
+                error_code = error.returncode
+                # No mail is not an error, as is not another running copy
+                if (not error_message.startswith("fetchmail: No mail") and
+                        error_code != 8):
                     print(error_message)
                 user_info = "for %s at %s" % (fetch["user_email"], fetch["host"])
                 # Number of messages seen is not a error as well
@@ -95,6 +98,6 @@ def run(debug):
 
 if __name__ == "__main__":
     while True:
-        time.sleep(int(os.environ.get("FETCHMAIL_DELAY", 60)))
+        time.sleep(int(os.environ.get("FETCHMAIL_DELAY", 60)) + random.randint(0, 15))
         run(os.environ.get("DEBUG", None) == "True")
         sys.stdout.flush()
