@@ -159,11 +159,15 @@ def postfix_sender_rate(sender):
 
 @internal.route("/postfix/sender/access/<path:sender>")
 def postfix_sender_access(sender):
-    """ Simply reject any sender that pretends to be from a local domain
+    """ Simply reject any sender that pretends to be from a local domain.
+
+    We also deny use of address literals, which are often used by spammers.
     """
     if '@' in sender:
         if sender.startswith('<') and sender.endswith('>'):
             sender = sender[1:-1]
+        if re.match("(^|.*@)\[.*\]$", sender):
+            return flask.jsonify("REJECT")
         try:
             localpart, domain_name = models.Email.resolve_domain(sender)
             if models.Domain.query.get(domain_name):
