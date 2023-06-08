@@ -61,6 +61,8 @@ DEFAULT_CONFIG = {
     'MESSAGE_RATELIMIT': '200/day',
     'MESSAGE_RATELIMIT_EXEMPTION': '',
     'RECIPIENT_DELIMITER': '',
+    'REPLICATION': False,
+    'REPLICATION_TARGET': '',
     # Web settings
     'SITENAME': 'Mailu',
     'WEBSITE': 'https://mailu.io',
@@ -165,6 +167,9 @@ class ConfigManager:
             self.config['MAILU_VERSION'] = open('/version', 'r').read()
         except FileNotFoundError:
             pass
+
+        if self.config['REPLICATION'] and self.config['REPLICATION_TARGET'].startswith('tcp:'):
+            self.config['DSYNC_ADDRESS'] = system.resolve_hostname(self.config['REPLICATION_TARGET'].split(":")[1])
 
         # update the app config
         app.config.update(self.config)
