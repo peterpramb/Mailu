@@ -11,13 +11,13 @@ import requests
 from socrate import system
 import sys
 import traceback
+import random
 
 
 FETCHMAIL = """
 fetchmail -N \
-    --idfile /data/fetchids --uidl \
-    --pidfile /dev/shm/fetchmail.pid \
-    --sslcertck --sslcertpath /etc/ssl/certs \
+    --idfile /data/fetchids --pidfile /data/fetchpid \
+    --uidl --sslcertck --sslcertpath /etc/ssl/certs \
     -f {}
 """
 
@@ -74,8 +74,10 @@ def run(debug):
                 error_message = ""
             except subprocess.CalledProcessError as error:
                 error_message = error.output.decode("utf8")
-                # No mail is not an error
-                if not error_message.startswith("fetchmail: No mail"):
+                error_code = error.returncode
+                # No mail is not an error, as is not another running copy
+                if (not error_message.startswith("fetchmail: No mail") and
+                        error_code != 8):
                     print(error_message)
                 user_info = "for %s at %s" % (fetch["user_email"], fetch["host"])
                 # Number of messages seen is not a error as well
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     system.drop_privs_to('fetchmail')
     config = system.set_env()
     while True:
-        delay = int(os.environ.get('FETCHMAIL_DELAY', 60))
+        delay = int(os.environ.get('FETCHMAIL_DELAY', 60)) + random.randint(0, 15)
         print("Sleeping for {} seconds".format(delay))
         time.sleep(delay)
 
