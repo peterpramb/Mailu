@@ -134,10 +134,30 @@ The ``FULL_TEXT_SEARCH`` variable (default: 'en') is a comma separated list of
 language codes as defined on `fts_languages`_. This feature can be disabled
 (e.g. for performance reasons) by setting the variable to ``off``.
 
+.. _`fts_languages`: https://doc.dovecot.org/settings/plugin/fts-plugin/#fts-languages
+
 You can set a global ``DEFAULT_QUOTA`` to be used for mailboxes when the domain has
 no specific quota configured.
 
-.. _`fts_languages`: https://doc.dovecot.org/settings/plugin/fts-plugin/#fts-languages
+The `mail replication`_ feature in Dovecot is disabled by default. It can be enabled
+in a two-node Mailu setup by setting the optional variable ``REPLICATION`` to ``on``.
+Please note that both Mailu installations must have identical users configured for
+this feature to work. It is highly recommended to use the same (shared or replicated)
+database to ensure configuration consistency between both Mailu installations.
+
+.. _`mail replication`: https://doc.dovecot.org/configuration_manual/replication/
+
+The ``REPLICATION_TARGET`` is a mandatory setting when replication is enabled and
+points to the remote replication host in following format: ``tcp:HOST[:PORT]``.
+The port defaults to ``REPLICATION_PORT`` when not specified.
+
+The ``REPLICATION_PORT`` is a mandatory setting when replication is enabled and
+defines the local listening port of the replicator. It is necessary to publish this
+port on both Mailu nodes to allow connectivity between them.
+
+The ``REPLICATION_SECRET`` is a mandatory setting when replication is enabled and
+defines the shared secret of the replicator. It must be identical on both Mailu
+nodes.
 
 .. _web_settings:
 
@@ -212,7 +232,6 @@ Depending on your particular deployment you most probably will want to change th
 
 Advanced settings
 -----------------
-
 
 The ``AUTH_REQUIRE_TOKENS`` (default: False) setting controls whether thick clients can authenticate using passwords or whether they are forced to use tokens/application specific passwords.
 
