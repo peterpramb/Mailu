@@ -60,6 +60,8 @@ DEFAULT_CONFIG = {
     'MESSAGE_RATELIMIT': '200/day',
     'MESSAGE_RATELIMIT_EXEMPTION': '',
     'RECIPIENT_DELIMITER': '',
+    'REPLICATION': False,
+    'REPLICATION_TARGET': '',
     # Web settings
     'SITENAME': 'Mailu',
     'WEBSITE': 'https://mailu.io',
