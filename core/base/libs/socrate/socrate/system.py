@@ -146,9 +146,13 @@ def clean_env():
 
 def drop_privs_to(username='mailu'):
     pwnam = getpwnam(username)
-    os.setgroups([])
-    os.setgid(pwnam.pw_gid)
-    os.setuid(pwnam.pw_uid)
+    try:
+        os.setgroups([])
+        os.setgid(pwnam.pw_gid)
+        os.setuid(pwnam.pw_uid)
+    except PermissionError:
+        # Not privileged
+        pass
     os.environ['HOME'] = pwnam.pw_dir
 
 # forwards text lines from src to dst in an infinite loop
