@@ -16,6 +16,9 @@ def dovecot_passdb_dict(user_email):
     allow_nets.append(app.config["SUBNET"])
     if app.config["SUBNET6"]:
         allow_nets.append(app.config["SUBNET6"])
+    if app.config["DSYNC_ADDRESS"]:
+        allow_nets.append("local")
+        allow_nets.append(app.config["DSYNC_ADDRESS"])
     return flask.jsonify({
         "password": None,
         "nopassword": "Y",
