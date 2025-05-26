@@ -1,11 +1,13 @@
 from mailu import models
 from mailu.internal import internal
 from flask import current_app as app
+from sqlalchemy import or_
 
 import flask
 import socket
 import os
 import sqlalchemy.exc
+
 
 @internal.route("/dovecot/passdb/<path:user_email>")
 def dovecot_passdb_dict(user_email):
@@ -20,11 +22,13 @@ def dovecot_passdb_dict(user_email):
         "allow_real_nets": ",".join(allow_nets)
     })
 
+
 @internal.route("/dovecot/userdb/")
 def dovecot_userdb_dict_list():
     return flask.jsonify([
-        user[0] for user in models.User.query.filter(models.User.enabled.is_(True)).with_entities(models.User.email).all()
+        user[0] for user in models.User.query.filter(models.User.enabled.is_(True), or_(models.User.enable_imap.is_(True), models.User.enable_pop.is_(True))).with_entities(models.User.email).all()
     ])
+
 
 @internal.route("/dovecot/userdb/<path:user_email>")
 def dovecot_userdb_dict(user_email):
